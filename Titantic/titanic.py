@@ -96,7 +96,7 @@ def add_missing_age(df):
     df.loc[(df.Age.isna()) & (df.Title == "Miss"), "Age"] = 21
     df.loc[(df.Age.isna()) & (df.Title == "Mr"), "Age"] = 32
     df.loc[(df.Age.isna()) & (df.Title == "Mrs"), "Age"] = 35
-    df.loc[(df.Age.isna()) & (df.Title == "Professional"), "Age"] = 4
+    df.loc[(df.Age.isna()) & (df.Title == "Professional"), "Age"] = 45
     return df
 
 def add_age_bracket_ehc(df):
@@ -179,7 +179,7 @@ clf = make_pipeline(GaussianNB())
 score = cross_val_score(clf, X, Y, cv=cv)
 print(f"Cross Validated GNB {np.mean(score)}")
 print("\n")
-
+print(X.shape)
 
 final_gnb = GaussianNB().fit(X, Y)
 predictions = final_gnb.predict(test_data.notna())
@@ -190,12 +190,3 @@ submit = test_df[['PassengerId', 'Survived']]
 print(submit.shape)
 print(submit.head())
 submit.to_csv("try_submit.csv", index=False)
-
-
-
-
-
-
-
-
-### spacer
