@@ -94,14 +94,14 @@ print(pp_train_df.describe())
 #### Isolate Models, numerical and categorical data
 mult_classifiers = {
         #"LM Linear Regression": LinearRegression(), # not useful for classification on titanic
-        "LM Logistic Regression": LogisticRegression(),
-        "LM Ridge": RidgeClassifier(),
+        #"LM Logistic Regression": LogisticRegression(),
+        #"LM Ridge": RidgeClassifier(),
         #"LM Lasso": Lasso(), Not useful for titanic dataset
-        "NN Multi layer Perceptron": MLPClassifier(),
-        "SVM Linear": svm.SVC(kernel='linear'),
-        "SVM RBF": svm.SVC(kernel='rbf'),
-        "KNN": KNeighborsClassifier(),
-        "BM Guassian Naive Bayes": GaussianNB(),
+        "NN Multi layer Perceptron": MLPClassifier(random_state=909),
+        #"SVM Linear": svm.SVC(kernel='linear'),
+        #"SVM RBF": svm.SVC(kernel='rbf'),
+        #"KNN": KNeighborsClassifier(),
+        #"BM Guassian Naive Bayes": GaussianNB(),
         #"BM Multinominal Naive Bayes":MultinomialNB(),
 
 }
@@ -128,7 +128,7 @@ cat_mult_pipeline = pipeline.Pipeline(steps=[
     ])
 
 num_mult_pipeline = pipeline.Pipeline(steps=[
-    ('imputer', impute.SimpleImputer(strategy='mean')),
+    ('imputer', impute.SimpleImputer(strategy='median')),
     #('Scaler',StandardScaler()),
     ('Quantile Transform',QuantileTransformer(n_quantiles=801)),
     #('Yeo-Johnson', PowerTransformer(method='yeo-johnson')),
@@ -159,6 +159,19 @@ tree_prepro = compose.ColumnTransformer(transformers=[
 tree_classifiers = {name: pipeline.make_pipeline(tree_prepro, model) for name, model in tree_classifiers.items()}
 mult_classifiers = {name: pipeline.make_pipeline(mult_prepro, model) for name, model in mult_classifiers.items()}
 
+
+##########################################################################################################
+#### create parameters for gridsearch
+param_grid = [
+    {
+    'mult_prepro__num__imputer__strategy' :  ['mean', 'median'],
+    'classifier__solver' :      ['lbfgs', 'sgd', 'adam'],
+    'classifier': [MLPClassifier(random_state=909)]
+    }
+]
+
+
+
 ##########################################################################################################
 #### Run the models
 
@@ -171,21 +184,24 @@ print("XXXXXXXXXXXXXXXXXXXXX")
 
 
 for model_name, model in mult_classifiers.items():
-    start_time = time.time()
-    pred = cross_val_predict(model, x, y,cv=skf)
-    total_time = time.time() - start_time
+    start_cross_val = time.time()
+    #pred = cross_val_predict(model, x, y,cv=skf)
+    clf = GridSearchCV(model, param_grid, cv=10, scoring='accuracy').fit(x,y)
+    total_cross_val = time.time() - start_time
+    print(clf.best_params_)
+
 
     results = results.append({"Model":    model_name,
                               "Accuracy": metrics.accuracy_score(y, pred)*100,
                               "Bal Acc.": metrics.balanced_accuracy_score(y, pred)*100,
-                              "Time":     total_time},
+                              "Time":     total_cross_val},
                               ignore_index=True)
 
 
 # YOUR CODE HERE
-results_ord = results.sort_values(by=['Accuracy'], ascending=False, ignore_index=True)
-results_ord.index += 1
-results_ord.style.bar(subset=['Accuracy', 'Bal Acc.'], vmin=0, vmax=100, color='#5fba7d')
+# results_ord = results.sort_values(by=['Accuracy'], ascending=False, ignore_index=True)
+# results_ord.index += 1
+# results_ord.style.bar(subset=['Accuracy', 'Bal Acc.'], vmin=0, vmax=100, color='#5fba7d')
 
-print(results_ord)
-results_ord.to_csv("multtest.csv")
+# print(results_ord)
+# results_ord.to_csv("multtest.csv")
