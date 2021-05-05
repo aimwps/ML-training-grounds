@@ -94,14 +94,14 @@ print(pp_train_df.describe())
 #### Isolate Models, numerical and categorical data
 mult_classifiers = {
         #"LM Linear Regression": LinearRegression(), # not useful for classification on titanic
-        #"LM Logistic Regression": LogisticRegression(),
-        #"LM Ridge": RidgeClassifier(),
+        "LM Logistic Regression": LogisticRegression(),
+        "LM Ridge": RidgeClassifier(),
         #"LM Lasso": Lasso(), Not useful for titanic dataset
         "NN Multi layer Perceptron": MLPClassifier(random_state=909),
-        #"SVM Linear": svm.SVC(kernel='linear'),
-        #"SVM RBF": svm.SVC(kernel='rbf'),
-        #"KNN": KNeighborsClassifier(),
-        #"BM Guassian Naive Bayes": GaussianNB(),
+        "SVM Linear": svm.SVC(kernel='linear'),
+        "SVM RBF": svm.SVC(kernel='rbf'),
+        "KNN": KNeighborsClassifier(),
+        "BM Guassian Naive Bayes": GaussianNB(),
         #"BM Multinominal Naive Bayes":MultinomialNB(),
 
 }
@@ -117,21 +117,21 @@ tree_classifiers = {
         "LightGBM":LGBMClassifier(),
         "CatBoost":CatBoostClassifier()
         }
-cat_vars  = ['Sex', 'Embarked', 'Title']
-num_vars  = ['Pclass', 'SibSp', 'Parch', 'Fare', 'Age']
+cat_vars  = ['Sex', 'Embarked', 'Title','Pclass', 'Parch' ]
+num_vars  = ['Fare', 'Age', 'SibSp', ]
 
 ##########################################################################################################
 #### Create Pipelines
 cat_mult_pipeline = pipeline.Pipeline(steps=[
     ('imputer', impute.SimpleImputer(strategy='constant', fill_value='missing')),
-    ('One Hot', OneHotEncoder(handle_unknown="error")),
+    ('One Hot', OneHotEncoder(handle_unknown="ignore")),
     ])
 
 num_mult_pipeline = pipeline.Pipeline(steps=[
-    ('imputer', impute.SimpleImputer(strategy='median')),
+    ('imputer', impute.SimpleImputer(strategy='median', )),
     #('Scaler',StandardScaler()),
-    ('Quantile Transform',QuantileTransformer(n_quantiles=801)),
-    #('Yeo-Johnson', PowerTransformer(method='yeo-johnson')),
+    #('Quantile Transform',QuantileTransformer(n_quantiles=100, output_distribution='normal')),
+    ('Yeo-Johnson', PowerTransformer(method='yeo-johnson')),
     #('Box-Cox', PowerTransformer(method='box-cox')), # all values must be greater than 0
     #('Scaler',StandardScaler),
     ])
@@ -185,10 +185,10 @@ print("XXXXXXXXXXXXXXXXXXXXX")
 
 for model_name, model in mult_classifiers.items():
     start_cross_val = time.time()
-    #pred = cross_val_predict(model, x, y,cv=skf)
-    clf = GridSearchCV(model, param_grid, cv=10, scoring='accuracy').fit(x,y)
-    total_cross_val = time.time() - start_time
-    print(clf.best_params_)
+    pred = cross_val_predict(model, x, y,cv=skf)
+    #clf = GridSearchCV(model, param_grid, cv=10, scoring='accuracy').fit(x,y)
+    total_cross_val = time.time() - start_cross_val
+
 
 
     results = results.append({"Model":    model_name,
@@ -198,10 +198,9 @@ for model_name, model in mult_classifiers.items():
                               ignore_index=True)
 
 
-# YOUR CODE HERE
-# results_ord = results.sort_values(by=['Accuracy'], ascending=False, ignore_index=True)
-# results_ord.index += 1
-# results_ord.style.bar(subset=['Accuracy', 'Bal Acc.'], vmin=0, vmax=100, color='#5fba7d')
+results_ord = results.sort_values(by=['Accuracy'], ascending=False, ignore_index=True)
+results_ord.index += 1
+results_ord.style.bar(subset=['Accuracy', 'Bal Acc.'], vmin=0, vmax=100, color='#5fba7d')
 
-# print(results_ord)
-# results_ord.to_csv("multtest.csv")
+print(results_ord)
+results_ord.to_csv("multtest.csv")
