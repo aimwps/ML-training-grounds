@@ -64,7 +64,7 @@ o_results = cross_val_score(OESTIMATOR,
                                  scoring="accuracy",
                                  n_jobs=-1)
 
-print(f"The average original cross validated score is {np.mean(o_results)}")
+print(f"The averaimwpsage original cross validated score is {np.mean(o_results)}")
 # fn= "osaved-model.pickle"
 # pickle.dump(OESTIMATOR, open(fn, 'wb'))
 
