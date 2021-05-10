@@ -81,12 +81,22 @@ def group_month_sales(df):
 mdf33 = get_month_data(mdf, 33)
 
 gbmdf33 = mdf33.groupby(['shop_id', "item_id"])['item_cnt_day'].sum().reset_index()
+psm = gbmdf33[['shop_id', "item_id", 'item_cnt_day']]
+print(test.sample(10))
+test = test.merge(psm, on=['shop_id', "item_id"], how="left")
+test = test.fillna(0)
+test['item_cnt_month'] = test['item_cnt_day'].clip(0,20)
+submit = test[['ID', 'item_cnt_month']]
+print(submit)
+submit.to_csv("data/baseline.csv", index=False)
+
+
+
 X = gbmdf33[['shop_id', "item_id"]]
 Y = gbmdf33['item_cnt_day'].clip(0,20)
 
 # TX = test[['shop_id', "item_id"]]
 X_train, X_test, Y_train, Y_test = train_test_split(X,Y, test_size=0.2)
-#
 # GBR.fit(X_train, Y_train)
 # preds = GBR.predict(X_test)
 # score = metrics.mean_squared_error(Y_test, preds, squared=False)
@@ -130,11 +140,11 @@ def objective(trial):
 
     return error  # An objective value linked with the Trial object.
 
-study = optuna.create_study()  # Create a new study.
-study.optimize(objective, n_trials=100)
-print(" Value: ", study.best_trial.value)
-for key, value in study.best_trial.params.items():
-    print(f"    {key}: {value}")
+# study = optuna.create_study()  # Create a new study.
+# study.optimize(objective, n_trials=100)
+# print(" Value: ", study.best_trial.value)
+# for key, value in study.best_trial.params.items():
+#     print(f"    {key}: {value}")
 
 
 
