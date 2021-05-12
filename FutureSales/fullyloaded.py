@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-import os, time, gc
+import os, time, gc, optuna
 from sklearn                    import compose, impute, metrics, model_selection, pipeline
 from sklearn.preprocessing      import StandardScaler, OrdinalEncoder, OneHotEncoder, PowerTransformer, QuantileTransformer
 from sklearn.model_selection    import cross_val_score, ShuffleSplit, GridSearchCV, train_test_split, StratifiedKFold, cross_val_predict
@@ -17,7 +17,9 @@ from sklearn.ensemble           import HistGradientBoostingRegressor
 from catboost                   import CatBoostRegressor
 from lightgbm                   import LGBMRegressor
 from itertools                  import product
-import optuna
+from geopy.geocoders            import Nominatim
+from functools                  import partial
+from geopy.extra.rate_limiter   import RateLimiter
 
 
 ################################################################################
@@ -57,7 +59,6 @@ def generate_total_item_sales_all(df):
         df = df.merge(group_product_month, on=["item_id"], how="left")
         df.rename(columns={"item_cnt_day_x":"item_cnt_day", "item_cnt_day_y": f"item_total_month_{month_num}"}, inplace=True)
         df[f"item_total_month_{month_num}"].fillna(0, inplace=True)
-    df.to_csv("data/prodsales.csv")
     return df
 
 #### Used for generating data for a prediction
@@ -114,31 +115,47 @@ cats = get_super_category(categories)
 cats.to_csv("data/cates.csv")
 print(cats.info())
 print(cats.head())
+################################################################################
+## PREPROCESS SHOP DATA
 
 def get_store_location(df):
+    geolocator = Nominatim(user_agent="future_sales")
+    geocode = RateLimiter(geolocator.geocode, min_delay_seconds=1)
     df['shop_name'] = df["shop_name"].str.strip("!").str.strip().str.replace(". ", ".", n=1, regex=False)
-    # df['shop_name'] = df["shop_name"].str.strip()
-    # df['shop_name'] = df["shop_name"].str.replace(". ", ".", n=1, regex=False)
-    #
     df['city'] = df['shop_name'].str.split(" ", n=1, expand=True)[0]
     df['city'] = df['city'].str.strip()
-    # print(df.head())
+    df['city'] = df['city'].str.replace("RostovNaDonu","Rostov-on-Don", regex=False)
+    df['city'] = df['city'].str.replace("RostovNaDon","Rostov-on-Don", regex=False)
+    df['location'] = df['city'].apply(partial(geocode, language="en"))
+    df['point'] = df['location'].apply(lambda loc: tuple(loc.point) if loc else None)
+    df['latitude'] = df['point'].apply(lambda loc: loc[0])
+    df['longitude'] = df['point'].apply(lambda loc: loc[1])
+    df.drop(['location', 'point'], axis=1, inplace=True)
     return df
 
+def determine_online_store(df):
+    df['online_only'] = df['shop_name'].apply(lambda loc: True if ('Online' in loc or 'Internet' in loc) else False)
+    return df
 
 def replace_duplicate_shop_id(df):
-    df['shop_id'] = df['shop_id'].replace({57:0, 58:1, 11:10, 41:39})
+    df['AIshop_id'] = df['shop_id'].replace({57:0, 58:1, 11:10, 41:39})
     return df
 
+def transform_shops(df):
+    df = get_store_location(df)
+    df = replace_duplicate_shop_id(df)
+    df = determine_online_store(df)
+    return df
+
+#pp_shops = transform_shops(shops)
+################################################################################
 
 
 
 
-cities = get_store_location(shops)
-cities = replace_duplicate_shop_id(cities)
-cities.to_csv("cities.csv")
-# print(cities['city'].unique())
-# print(cities.head())
+
+
+
 ################################################################################
 ## GET CATEGORY FOR PREDICTION
 # test = pd.read_csv("data/test.csv")

@@ -1,0 +1,61 @@
+,shop_name,shop_id,city,latitude,longitude,AIshop_id,online_only
+0,"Yakutsk Ordzhonikidze, 56 francs",0,Yakutsk,62.027287,129.732086,0,False
+1,"Yakutsk TC ""Central"" fran",1,Yakutsk,62.027287,129.732086,1,False
+2,"Adygea TC ""Mega""",2,Adygea,44.6939006,40.1520421,2,False
+3,"Balashikha TC ""Oktyabr-Kinomir""",3,Balashikha,55.8036225,37.9646488,3,False
+4,"Volga TC ""Volga Mall""",4,Volga,56.1670244,44.2150569,4,False
+5,"Vologda SEC ""Marmelad""",5,Vologda,59.218876,39.893276,5,False
+6,"Voronezh (Plekhanovskaya, 13)",6,Voronezh,51.6605982,39.2005858,6,False
+7,"Voronezh SEC ""Maksimir""",7,Voronezh,51.6605982,39.2005858,7,False
+8,"Voronezh SEC City-Park ""Grad""",8,Voronezh,51.6605982,39.2005858,8,False
+9,Outbound Trade,9,Outbound,42.3517651,-71.125352,9,False
+10,Zhukovsky st.Chkalov 39m?,10,Zhukovsky,55.5972801,38.1199863,10,False
+11,Zhukovsky st.Chkalov 39m²,11,Zhukovsky,55.5972801,38.1199863,10,False
+12,Internet-shop of emergency situations,12,Internet-shop,14.6638661,121.0698533,12,True
+13,"Kazan TC ""Behetle""",13,Kazan,55.7823547,49.1242266,13,False
+14,"Kazan TC ""ParkHouse"" II",14,Kazan,55.7823547,49.1242266,14,False
+15,"Kaluga TC ""XXI century""",15,Kaluga,54.5101087,36.2598115,15,False
+16,"Kolomna TC ""Rio""",16,Kolomna,55.0938743,38.7670121,16,False
+17,"Krasnoyarsk TC ""Vzletka Plaza""",17,Krasnoyarsk,63.3233807,97.0979974,17,False
+18,"Krasnoyarsk TC ""June""",18,Krasnoyarsk,63.3233807,97.0979974,18,False
+19,"Kursk TC "" Pushkinskiy """,19,Kursk,51.739433,36.179604,19,False
+20,"Moscow"" Sale """,20,"Moscow""",55.7504461,37.6174943,20,False
+21,"Moscow MTRC"" Afi Mall """,21,Moscow,55.7504461,37.6174943,21,False
+22,Moscow Shop C21,22,Moscow,55.7504461,37.6174943,22,False
+23,"Moscow TK"" Budenovskiy ""(pav.A2)",23,Moscow,55.7504461,37.6174943,23,False
+24,"Moscow TK"" Budenovskiy ""(pav.K7)",24,Moscow,55.7504461,37.6174943,24,False
+25,"Moscow TEC"" Atrium """,25,Moscow,55.7504461,37.6174943,25,False
+26,"Moscow TTS"" Areal ""(Belyaevo)",26,Moscow,55.7504461,37.6174943,26,False
+27,"Moscow TC"" MEGA Belaya Dacha II """,27,Moscow,55.7504461,37.6174943,27,False
+28,"Moscow TC"" MEGA Teply Stan ""II",28,Moscow,55.7504461,37.6174943,28,False
+29,"Moscow TC"" New Age ""(Novokosino)",29,Moscow,55.7504461,37.6174943,29,False
+30,"Moscow TC"" Perlovsky """,30,Moscow,55.7504461,37.6174943,30,False
+31,"Moscow TC"" Semenovsky """,31,Moscow,55.7504461,37.6174943,31,False
+32,"Moscow TC"" Serebryany House """,32,Moscow,55.7504461,37.6174943,32,False
+33,"Mytishchi SEC"" XL-3 """,33,Mytishchi,55.9094928,37.7339358,33,False
+34,"N.Novgorod SEC"" RIO """,34,N.Novgorod,57.9479066,47.3711748,34,False
+35,"N.Novgorod SEC"" Fantasy """,35,N.Novgorod,57.9479066,47.3711748,35,False
+36,"Novosibirsk SEC"" Gallery Novosibirsk """,36,Novosibirsk,55.0282171,82.9234509,36,False
+37,"Novosibirsk SEC"" Mega """,37,Novosibirsk,55.0282171,82.9234509,37,False
+38,"Omsk TC"" Mega """,38,Omsk,54.991375,73.371529,38,False
+39,"RostovNaDonu SEC"" Megacenter Horizon",39,Rostov-on-Don,47.2213858,39.7114196,39,False
+40,RostovNaDon Megatsentr Gorizont Ostrovnoy shopping mall,40,Rostov-on-Don,47.2213858,39.7114196,40,False
+41,RostovNaDon Mega shopping center,41,Rostov-on-Don,47.2213858,39.7114196,39,False
+42,St.Petersburg Nevsky Center shopping center,42,St.Petersburg,59.938732,30.316229,42,False
+43,St.Petersburg Sennaya shopping center,43,St.Petersburg,59.938732,30.316229,43,False
+44,Samara Melody shopping center,44,Samara,53.198627,50.113987,44,False
+45,Samara ParkHouse shopping center,45,Samara,53.198627,50.113987,45,False
+46,Sergiev Posad 7Ya shopping center,46,Sergiev,42.6884395,23.373571,46,False
+47,"Surgut SEC ""City Mall""",47,Surgut,61.254032,73.3964,47,False
+48,"Tomsk SEC ""Emerald City""",48,Tomsk,58.6124279,82.0475315,48,False
+49,"Tyumen SEC ""Crystal""",49,Tyumen,57.153534,65.542274,49,False
+50,"Tyumen SEC ""Goodwin""",50,Tyumen,57.153534,65.542274,50,False
+51,"Tyumen TC ""Green Coast """,51,Tyumen,57.153534,65.542274,51,False
+52,"Ufa TC"" Central """,52,Ufa,46.370935349999996,6.231168493722434,52,False
+53,"Ufa TC"" Family ""2",53,Ufa,46.370935349999996,6.231168493722434,53,False
+54,"Khimki TC"" Mega """,54,Khimki,55.8892847,37.4449896,54,False
+55,Digital warehouse 1C-Online,55,Digital,25.6642999,-100.221055,55,True
+56,"Chekhov TC"" Karnaval """,56,Chekhov,55.1426603,37.4545328,56,False
+57,"Yakutsk Ordzhonikidze, 56",57,Yakutsk,62.027287,129.732086,0,False
+58,"Yakutsk TC"" Central """,58,Yakutsk,62.027287,129.732086,1,False
+59,"Yaroslavl TC"" Altair """,59,Yaroslavl,57.6263877,39.8933705,59,False

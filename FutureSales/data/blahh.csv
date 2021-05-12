@@ -10,7 +10,7 @@
 8,"Voronezh SEC City-Park ""Grad""",8,Voronezh,"Voronezh, Voronezh Oblast, Central Federal District, Russia","(51.6605982, 39.2005858, 0.0)",51.6605982,39.2005858
 9,Outbound Trade,9,Outbound,"Outbound, Fuller Street, Allston, Boston, Suffolk County, Massachusetts, 02446, United States","(42.3517651, -71.125352, 0.0)",42.3517651,-71.125352
 10,Zhukovsky st.Chkalov 39m?,10,Zhukovsky,"Zhukovsky, Moscow Oblast, Central Federal District, Russia","(55.5972801, 38.1199863, 0.0)",55.5972801,38.1199863
-11,Zhukovsky st.Chkalov 39m²,10,Zhukovsky,"Zhukovsky, Moscow Oblast, Central Federal District, Russia","(55.5972801, 38.1199863, 0.0)",55.5972801,38.1199863
+11,Zhukovsky st.Chkalov 39m²,11,Zhukovsky,"Zhukovsky, Moscow Oblast, Central Federal District, Russia","(55.5972801, 38.1199863, 0.0)",55.5972801,38.1199863
 12,Internet-shop of emergency situations,12,Internet-shop,"Internet Shop, Road 1, Matandang Balara, 3rd District, Quezon City, Second District, Metro Manila, 1119, Philippines","(14.6638661, 121.0698533, 0.0)",14.6638661,121.0698533
 13,"Kazan TC ""Behetle""",13,Kazan,"Kazan, Tatarstan, Volga Federal District, Russia","(55.7823547, 49.1242266, 0.0)",55.7823547,49.1242266
 14,"Kazan TC ""ParkHouse"" II",14,Kazan,"Kazan, Tatarstan, Volga Federal District, Russia","(55.7823547, 49.1242266, 0.0)",55.7823547,49.1242266
@@ -40,7 +40,7 @@
 38,"Omsk TC"" Mega """,38,Omsk,"Omsk, Omsk Oblast, Siberian Federal District, Russia","(54.991375, 73.371529, 0.0)",54.991375,73.371529
 39,"RostovNaDonu SEC"" Megacenter Horizon",39,Rostov-on-Don,"Rostov-on-Don, Rostov Oblast, Southern Federal District, Russia","(47.2213858, 39.7114196, 0.0)",47.2213858,39.7114196
 40,RostovNaDon Megatsentr Gorizont Ostrovnoy shopping mall,40,Rostov-on-Don,"Rostov-on-Don, Rostov Oblast, Southern Federal District, Russia","(47.2213858, 39.7114196, 0.0)",47.2213858,39.7114196
-41,RostovNaDon Mega shopping center,39,Rostov-on-Don,"Rostov-on-Don, Rostov Oblast, Southern Federal District, Russia","(47.2213858, 39.7114196, 0.0)",47.2213858,39.7114196
+41,RostovNaDon Mega shopping center,41,Rostov-on-Don,"Rostov-on-Don, Rostov Oblast, Southern Federal District, Russia","(47.2213858, 39.7114196, 0.0)",47.2213858,39.7114196
 42,St.Petersburg Nevsky Center shopping center,42,St.Petersburg,"Saint Petersburg, Northwestern Federal District, 190000, Russia","(59.938732, 30.316229, 0.0)",59.938732,30.316229
 43,St.Petersburg Sennaya shopping center,43,St.Petersburg,"Saint Petersburg, Northwestern Federal District, 190000, Russia","(59.938732, 30.316229, 0.0)",59.938732,30.316229
 44,Samara Melody shopping center,44,Samara,"Samara, Samara Oblast, Volga Federal District, 443028, Russia","(53.198627, 50.113987, 0.0)",53.198627,50.113987
@@ -56,6 +56,6 @@
 54,"Khimki TC"" Mega """,54,Khimki,"Khimki, Khimki Urban Okrug, Moscow Oblast, Central Federal District, Russia","(55.8892847, 37.4449896, 0.0)",55.8892847,37.4449896
 55,Digital warehouse 1C-Online,55,Digital,"Digital, Parques de Guadalupe, Guadalupe, Nuevo León, 67180, Mexico","(25.6642999, -100.221055, 0.0)",25.6642999,-100.221055
 56,"Chekhov TC"" Karnaval """,56,Chekhov,"Chekhov, Chekhovsky District, Moscow Oblast, Central Federal District, Russia","(55.1426603, 37.4545328, 0.0)",55.1426603,37.4545328
-57,"Yakutsk Ordzhonikidze, 56",0,Yakutsk,"Yakutsk, Yakutsk Urban District, Sakha Republic, Far Eastern Federal District, Russia","(62.027287, 129.732086, 0.0)",62.027287,129.732086
-58,"Yakutsk TC"" Central """,1,Yakutsk,"Yakutsk, Yakutsk Urban District, Sakha Republic, Far Eastern Federal District, Russia","(62.027287, 129.732086, 0.0)",62.027287,129.732086
+57,"Yakutsk Ordzhonikidze, 56",57,Yakutsk,"Yakutsk, Yakutsk Urban District, Sakha Republic, Far Eastern Federal District, Russia","(62.027287, 129.732086, 0.0)",62.027287,129.732086
+58,"Yakutsk TC"" Central """,58,Yakutsk,"Yakutsk, Yakutsk Urban District, Sakha Republic, Far Eastern Federal District, Russia","(62.027287, 129.732086, 0.0)",62.027287,129.732086
 59,"Yaroslavl TC"" Altair """,59,Yaroslavl,"Yaroslavl, Yaroslavl Oblast, Central Federal District, 150000, Russia","(57.6263877, 39.8933705, 0.0)",57.6263877,39.8933705
