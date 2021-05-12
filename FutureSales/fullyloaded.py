@@ -167,6 +167,36 @@ def preprocess_prediction_df(train_df, test_df):
     return test_df
 #p = preprocess_prediction_df(mdf, test)
 
+################################################################################
+## FOR GENERATING MONTHLY SHOP SALES ACROSS ALL STORES
+
+#### Used for generating data for the training set
+def generate_total_shop_sales_all(df):
+    for month_num in sorted(df['date_block_num'].unique()):
+        month_df = df[df['date_block_num']==month_num]#
+        group_shop_month = month_df.groupby('shop_id')['item_cnt_day'].sum().reset_index()
+        df = df.merge(group_shop_month, on=["shop_id"], how="left")
+        print(df.info())
+        df.rename(columns={"item_cnt_day_x":"item_cnt_day", "item_cnt_day_y": f"shop_total_month_{month_num}"}, inplace=True)
+        df[f"shop_total_month_{month_num}"].fillna(0, inplace=True)
+        print(df.sample(10))
+    print(df.head())
+    print(df.tail())
+    print(df.info())
+    return df
+
+#### Used for generating data for a prediction
+def generate_total_shop_sales_by_ID(train_df, s_id):
+    results = {"shop_id": [s_id],}
+    for month_num in sorted(train_df['date_block_num'].unique()):
+        month_df = train_df[train_df['date_block_num']== month_num]
+        results[f"shop_total_month_{month_num}"] = [month_df[month_df['shop_id'] == s_id]['item_cnt_day'].sum()]
+        print(results)
+
+    for k,v in results.items():
+        print(f"label: {k}, result: {v}")
+
+    return pd.DataFrame(results)
 
 
 
