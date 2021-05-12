@@ -18,150 +18,184 @@ from catboost                   import CatBoostRegressor
 from lightgbm                   import LGBMRegressor
 from itertools                  import product
 import optuna
-tree_regressors = {
-    "Decision_tree_regressor": DecisionTreeRegressor(),
-    "AdaBoost_regressor": AdaBoostRegressor(),
-    "Extra_trees_regressor": ExtraTreesRegressor(),
-    "Random_forest_regressor": RandomForestRegressor(), # Takes 55 seconds
-    "GBM_regressor": GradientBoostingRegressor(), #Takes forever
-    "HGB_regressor": HistGradientBoostingRegressor(),
-    "CATBoost_regressor": CatBoostRegressor(verbose=0),
-    "lightgbm_regressor": LGBMRegressor(),
-        }
-mult_regeressors = {
-    "Linear_regression": LinearRegression(), ### Dont use results were awful
-    "Ridge_regressor": Ridge(),
-    "SVM_regressor": SVR(), # Takes 150  seconds
-    "MLP_regressor": MLPRegressor(),
-    "SGD_regressor": SGDRegressor(),
-    "KNN_regressor": KNeighborsRegressor(),
-    "BR_regressor" : BayesianRidge(),
-    #"RNN_regressor": RadiusNeighborsRegressor(), # Predicts NaN's :S
-        }
 
-all_models = {**tree_regressors, **mult_regeressors}
+
 ################################################################################
-## Construct the dataframe, merge other other dataframes into it.
+## Construct the dataframe
 mdf = pd.read_csv("data/sales_train.csv")
 items = pd.read_csv("data/en_items.csv")
 shops = pd.read_csv("data/en_shops.csv")
 categories = pd.read_csv("data/en_categories.csv")
 test = pd.read_csv("data/test.csv")
+
+
+################################################################################
+## Merge corresponding datafrom other data frames
 mdf.sort_values(["date", "date_block_num", "shop_id", "item_id"], inplace=True)
 mdf = mdf.merge(items, on="item_id", how="left")
 mdf = mdf.merge(categories, left_on="item_category_id", right_on="category_id", how="left")
 mdf = mdf.merge(shops, on="shop_id", how ="left")
 mdf = mdf.drop('item_category_id', axis=1)
-#print(mdf['item_cnt_day'].describe())
 mdf['item_cnt_day'] = mdf['item_cnt_day'].clip(0,20)
-#print(mdf['item_cnt_day'].describe())
 
-def get_shop_data(df, shopid): #'shop_id'
-    return df[df["shop_id"] == shopid]
-
-def get_month_data(df, monthid):
-    return df[df["date_block_num"]==monthid]
-
-def group_month_sales(df):
-    target_values = df.groupby('item_id')['item_cnt_day'].agg('sum')
-    x = target_values.describe()
-    print(x)
-
-
-### From the test data extract
-## The Shop name
-## The Item name
-#### Perform feature engineering on the Shop name
-#### Perform feature engineering on the item name
-
-
-
-### For the training data
-### For grouping the month
-mdf33 = get_month_data(mdf, 33)
-
+################################################################################
+## Get total sales from previous month
+mdf33 = mdf[mdf['date_block_num']==33]
 gbmdf33 = mdf33.groupby(['shop_id', "item_id"])['item_cnt_day'].sum().reset_index()
-psm = gbmdf33[['shop_id', "item_id", 'item_cnt_day']]
-print(test.sample(10))
-test = test.merge(psm, on=['shop_id', "item_id"], how="left")
+test = test.merge(gbmdf33, on=['shop_id', "item_id"], how="left")
 test = test.fillna(0)
 test['item_cnt_month'] = test['item_cnt_day'].clip(0,20)
-submit = test[['ID', 'item_cnt_month']]
-print(submit)
-submit.to_csv("data/baseline.csv", index=False)
+
+################################################################################
+## FOR GENERATING MONTHLY ITEM SALES ACROSS ALL STORES
+
+#### Used for generating data for the training set
+def generate_total_item_sales_all(df):
+    for month_num in sorted(df['date_block_num'].unique()):
+        month_df = df[df['date_block_num']==month_num]#
+        group_product_month = month_df.groupby('item_id')['item_cnt_day'].sum().reset_index()
+        df = df.merge(group_product_month, on=["item_id"], how="left")
+        df.rename(columns={"item_cnt_day_x":"item_cnt_day", "item_cnt_day_y": f"item_total_month_{month_num}"}, inplace=True)
+        df[f"item_total_month_{month_num}"].fillna(0, inplace=True)
+    df.to_csv("data/prodsales.csv")
+    return df
+
+#### Used for generating data for a prediction
+def generate_total_item_sales_by_ID(train_df, i_id):
+    results = {"item_id": [i_id],}
+    for month_num in sorted(train_df['date_block_num'].unique()):
+        month_df = train_df[train_df['date_block_num']== month_num]
+        results[f"item_total_month_{month_num}"] = [month_df[month_df['item_id'] == i_id]['item_cnt_day'].sum()]
+
+    # for k,v in results.items():
+    #     print(f"label: {k}, result: {v}")
+
+    return pd.DataFrame(results)
+
+################################################################################
+## FOR GENERATING MONTHLY SHOP SALES ACROSS ALL STORES
+
+#### Used for generating data for the training set
+def generate_total_shop_sales_all(df):
+    for month_num in sorted(df['date_block_num'].unique()):
+        month_df = df[df['date_block_num']==month_num]#
+        group_shop_month = month_df.groupby('shop_id')['item_cnt_day'].sum().reset_index()
+        df = df.merge(group_shop_month, on=["shop_id"], how="left")
+        df.rename(columns={"item_cnt_day_x":"item_cnt_day", "item_cnt_day_y": f"shop_total_month_{month_num}"}, inplace=True)
+        df[f"shop_total_month_{month_num}"].fillna(0, inplace=True)
+
+    return df
+
+#### Used for generating data for a prediction
+def generate_total_shop_sales_by_ID(train_df, s_id):
+    results = {"shop_id": [s_id],}
+    for month_num in sorted(train_df['date_block_num'].unique()):
+        month_df = train_df[train_df['date_block_num']== month_num]
+        results[f"shop_total_month_{month_num}"] = [month_df[month_df['shop_id'] == s_id]['item_cnt_day'].sum()]
+
+    # for k,v in results.items():
+    #     print(f"label: {k}, result: {v}")
+
+    return pd.DataFrame(results)
 
 
+################################################################################
+## PREPROCESS CATEGORICAL DATA
 
-X = gbmdf33[['shop_id', "item_id"]]
-Y = gbmdf33['item_cnt_day'].clip(0,20)
+def get_super_category(df):
+    df['super_category'] = df['category_name'].str.split("-", n=1, expand=True)[0]
+    return df
+# cats = get_super_category(categories)
+# print(cats.head())
 
-# TX = test[['shop_id', "item_id"]]
-X_train, X_test, Y_train, Y_test = train_test_split(X,Y, test_size=0.2)
-# GBR.fit(X_train, Y_train)
-# preds = GBR.predict(X_test)
-# score = metrics.mean_squared_error(Y_test, preds, squared=False)
-# print(score)
-
-# results = pd.DataFrame({"Model_name":[], "RSME": [], "RUNTIME": []})
-# for model_name, model in all_models.items():
-#     print(f"Working on {model_name}")
-#     start_time = time.time()
-#     model.fit(X_train, Y_train)
-#     pred = model.predict(X_test)
-#     total_time = time.time() - start_time
-#     score = metrics.mean_squared_error(Y_test, pred, squared=False)
-#     results = results.append({
-#                     "Model_name":model_name,
-#                     "RSME": score,
-#                     "RUNTIME": total_time}
-#                     ,ignore_index=True)
-# results_ord = results.sort_values(by=['RSME'], ascending=False, ignore_index=True)
-# print(results_ord.head(20))
-
-
-def objective(trial):
-
-    # Invoke suggest methods of a Trial object to generate hyperparameters.
-    regressor_name = trial.suggest_categorical('classifier', ['SVR', 'RandomForest'])
-    if regressor_name == 'SVR':
-        svr_c = trial.suggest_float('svr_c', 1e-10, 1e10, log=True)
-        regressor_obj = SVR(C=svr_c)
-    else:
-        rf_max_depth = trial.suggest_int('rf_max_depth', 2, 32)
-        regressor_obj = RandomForestRegressor(max_depth=rf_max_depth)
-
-
-    X_train, X_val, y_train, y_val = train_test_split(X, Y, random_state=0)
-
-    regressor_obj.fit(X_train, y_train)
-    y_pred = regressor_obj.predict(X_val)
-
-    error = metrics.mean_squared_error(y_val, y_pred)
-
-    return error  # An objective value linked with the Trial object.
-
-# study = optuna.create_study()  # Create a new study.
-# study.optimize(objective, n_trials=100)
-# print(" Value: ", study.best_trial.value)
-# for key, value in study.best_trial.params.items():
-#     print(f"    {key}: {value}")
-
-
-
-# na = gbmdf33.isna().sum()
-# print(gbmdf33.sample(100))
+def get_store_location(df):
+    df['shop_name'] = df["shop_name"].str.strip("!").str.strip().str.replace(". ", ".", n=1, regex=False)
+    # df['shop_name'] = df["shop_name"].str.strip()
+    # df['shop_name'] = df["shop_name"].str.replace(". ", ".", n=1, regex=False)
+    #
+    df['city'] = df['shop_name'].str.split(" ", n=1, expand=True)[0]
+    df['city'] = df['city'].str.strip()
+    # print(df.head())
+    return df
+cities = get_store_location(shops)
+print(cities['city'].unique())
+print(cities.head())
+################################################################################
+## GET CATEGORY FOR PREDICTION
+# test = pd.read_csv("data/test.csv")
+# categories = pd.read_csv("data/en_categories.csv")
+# mdf = mdf.merge(categories, left_on="item_category_id", right_on="category_id", how="left")
 #
+# def add_item_category_to_prediction():
+#     pass
 
 
-# shop = get_shop_data(mdf,25)
-# print(shop.sample(50))
-# print(shop.shape)
-#
-# shop_month = get_month_data(shop, 33)
-# print(shop_month.sample(50))
-# print(shop_month.shape)
-#
-# item_month_sales = group_month_sales(shop_month)
-# print(item_month_sales.head())
-# print(item_month_sales.shape)
-# print(item_month_sales.describe())
+################################################################################
+## FOR PREPROCESSING PREDICTIONS
+
+def preprocess_prediction_df(train_df, test_df):
+    print(f"SHAPE OF test_DF : {test_df.shape}")
+    shop_results = None
+    for s_id in test_df['shop_id'].unique():
+        if isinstance(shop_results, pd.DataFrame):
+            shop_results = pd.concat([shop_results, generate_total_shop_sales_by_ID(train_df, s_id)])
+        else:
+            shop_results = generate_total_shop_sales_by_ID(train_df, s_id)
+    test_df = test_df.merge(shop_results, on="shop_id", how="left")
+    print(f"SHAPE OF test_DF : {test_df.shape}")
+
+    item_results = None
+    for i, i_id in enumerate(test_df['item_id'].unique()):
+        print(f"{i}/{len(test_df['item_id'].unique())}")
+        if isinstance(shop_results, pd.DataFrame):
+            item_results = pd.concat([item_results, generate_total_item_sales_by_ID(train_df, i_id)])
+        else:
+            item_results = generate_total_item_sales_by_ID(train_df, s_id)
+    test_df = test_df.merge(item_results, on="item_id", how="left")
+    print(f"SHAPE OF test_DF : {test_df.shape}")
+
+    # for row in test_df.itertuples():
+    #     print(row)
+    #     shop_totals = generate_total_shop_sales_by_ID(train_df, row.shop_id)
+    #     item_totals = generate_total_item_sales_by_ID(train_df, row.item_id)
+    #     # print(shop_totals)
+    #     # print(item_totals)
+    #
+
+
+
+    return test_df
+#p = preprocess_prediction_df(mdf, test)
+
+
+
+
+
+################################################################################
+## FOR REORDERING DATA FRAME FOR MODEL SUBMISSION:
+
+def reorder_dataframe(df):
+    shop_sales = [f"shop_total_month_{i}" for i in sorted(df['date_block_num'].unique())]
+    item_sales = [f"item_total_month_{i}" for i in sorted(df['date_block_num'].unique())]
+    df = df[['date', 'date_block_num', "shop_id", "item_id","item_price", "item_cnt_day", "item_name", "category_name", "category_id", "shop_name"]+ shop_sales + item_sales]
+
+    print(df.info())
+    return df
+
+# print(mdf.shape)
+# print(mdf.info())
+# mdf = generate_total_shop_sales_all(mdf)
+# print(mdf.shape)
+# print(mdf.info())
+# mdf = generate_total_item_sales_all(mdf)
+# print(mdf.shape)
+# print(mdf.info())
+# mdf = reorder_dataframe(mdf)
+# print(mdf.shape)
+# print(mdf.info())
+
+
+##  Each product has a total sales for each month
+##  When predicting shop/product combo
+##  Look up for that product the total sales for each month
+##  generate total_product_1, total_product_2, total_product_3 etc
