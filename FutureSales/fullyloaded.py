@@ -103,10 +103,17 @@ def generate_total_shop_sales_by_ID(train_df, s_id):
 ## PREPROCESS CATEGORICAL DATA
 
 def get_super_category(df):
-    df['super_category'] = df['category_name'].str.split("-", n=1, expand=True)[0]
+    df[['category_1', 'category_2']] = df['category_name'].str.split("-", n=1, expand=True)
+    df['category_2'] = df['category_2'].str.replace("\([^)]*\)","", regex=True)
+    #df['category_2'].fillna()
+    print(df.isna().sum())
     return df
-# cats = get_super_category(categories)
-# print(cats.head())
+
+
+cats = get_super_category(categories)
+cats.to_csv("data/cates.csv")
+print(cats.info())
+print(cats.head())
 
 def get_store_location(df):
     df['shop_name'] = df["shop_name"].str.strip("!").str.strip().str.replace(". ", ".", n=1, regex=False)
@@ -117,9 +124,21 @@ def get_store_location(df):
     df['city'] = df['city'].str.strip()
     # print(df.head())
     return df
+
+
+def replace_duplicate_shop_id(df):
+    df['shop_id'] = df['shop_id'].replace({57:0, 58:1, 11:10, 41:39})
+    return df
+
+
+
+
+
 cities = get_store_location(shops)
-print(cities['city'].unique())
-print(cities.head())
+cities = replace_duplicate_shop_id(cities)
+cities.to_csv("cities.csv")
+# print(cities['city'].unique())
+# print(cities.head())
 ################################################################################
 ## GET CATEGORY FOR PREDICTION
 # test = pd.read_csv("data/test.csv")
